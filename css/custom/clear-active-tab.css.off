@@ -1,0 +1,4 @@
+/* Делает активную вкладку заметнее, без изменения темы браузера. */
+#tabs-container .tab.active {
+  box-shadow: inset 0 3px 0 var(--colorHighlightBg) !important;
+}

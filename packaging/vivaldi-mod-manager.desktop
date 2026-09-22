@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Vivaldi Mod Manager
+Comment=Manage local Vivaldi CSS and JavaScript mods
+Exec=/bin/sh -lc vivaldi-mod-manager
+Terminal=false
+Categories=Utility;Settings;
+StartupNotify=true

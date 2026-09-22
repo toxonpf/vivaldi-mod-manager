@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vivaldi Mod Manager</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div><p class="eyebrow">LOCAL CONTROL CENTER</p><h1>Vivaldi Mod Manager</h1><p id="version">Получение версии…</p></div>
+      <button id="refresh" class="secondary">Обновить</button>
+    </header>
+    <div id="summary" class="summary"></div>
+    <section>
+      <div class="section-title"><div><h2>CSS-моды</h2><p>Безопасные визуальные изменения интерфейса</p></div><button id="create">+ Новый CSS</button></div>
+      <div class="toolbar"><input id="search" type="search" placeholder="Поиск модов…"><select id="filter"><option value="all">Все</option><option value="on">Включённые</option><option value="off">Выключенные</option></select></div>
+      <div id="css" class="cards"></div>
+    </section>
+    <section>
+      <div class="section-title"><div><h2>JS-моды</h2><p>Расширенная функциональность Vivaldi</p></div></div>
+      <div id="js" class="cards"></div>
+    </section>
+    <section id="trash-section" hidden>
+      <div class="section-title"><div><h2>Корзина</h2><p>Удалённые CSS-моды можно восстановить</p></div></div>
+      <div id="trash" class="cards compact"></div>
+    </section>
+    <section>
+      <div class="section-title"><div><h2>Журнал</h2><p>Последние действия менеджера</p></div></div>
+      <div id="activity" class="activity"></div>
+    </section>
+    <output id="output" aria-live="polite"></output>
+  </main>
+  <dialog id="editor">
+    <form method="dialog" id="editor-form">
+      <div class="dialog-title"><h2 id="editor-title">CSS-мод</h2><button type="button" data-close class="icon" aria-label="Закрыть">×</button></div>
+      <label>Имя файла<input id="mod-name" pattern="[a-z0-9][a-z0-9-]{0,63}" required></label>
+      <label>CSS-код<textarea id="mod-content" spellcheck="false" required></textarea></label>
+      <div class="dialog-actions"><button type="button" data-close class="secondary">Отмена</button><button id="save">Сохранить</button></div>
+    </form>
+  </dialog>
+  <dialog id="source-viewer">
+    <div class="source-panel">
+      <div class="dialog-title"><h2>Исходники tab-colors</h2><button type="button" data-close-source class="icon" aria-label="Закрыть">×</button></div>
+      <div class="source-tabs"><button type="button" id="show-js">JavaScript</button><button type="button" id="show-css" class="secondary">CSS</button><button type="button" id="copy-source" class="secondary">Копировать</button></div>
+      <textarea id="source-code" readonly spellcheck="false"></textarea>
+    </div>
+  </dialog>
+  <script src="/app.js"></script>
+</body>
+</html>

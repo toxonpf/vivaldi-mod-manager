@@ -1,0 +1,4 @@
+/* Мягко подсвечивает вкладку под курсором. */
+#tabs-container .tab:not(.active):hover {
+  background-color: color-mix(in srgb, var(--colorHighlightBg) 24%, transparent) !important;
+}

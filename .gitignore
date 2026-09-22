@@ -1,0 +1,13 @@
+# Runtime state
+web-manager/runtime/
+web-manager/activity.json
+trash/
+
+# Vivaldi installation backups
+*.user-tab-colors-backup
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp
+*~

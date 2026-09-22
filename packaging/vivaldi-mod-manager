@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -eu
+
+data_root="${XDG_DATA_HOME:-$HOME/.local/share}/vivaldi-mod-manager"
+current_link="$data_root/current"
+
+launch_current() {
+  if [[ -x "$current_link/start-web-manager.sh" && -f "$current_link/web-manager/server.js" ]]; then
+    exec "$current_link/start-web-manager.sh"
+  fi
+}
+
+launch_current
+
+# The project may have been moved. This fallback runs only when the registered
+# location is missing and skips large cache and dependency directories.
+candidate=$(
+  find "$HOME" \
+    \( -path "$HOME/.cache" -o -path "$HOME/.local" -o -path '*/node_modules' -o -path '*/.git' \) -prune -o \
+    -type f -name 'start-web-manager.sh' -print 2>/dev/null |
+  while IFS= read -r launcher; do
+    candidate_root=$(dirname "$launcher")
+    if [[ -f "$candidate_root/web-manager/server.js" && -f "$candidate_root/README.md" ]]; then
+      printf '%s\n' "$candidate_root"
+      break
+    fi
+  done
+)
+
+if [[ -n $candidate ]]; then
+  mkdir -p "$data_root"
+  ln -sfn "$candidate" "$current_link"
+  exec "$candidate/start-web-manager.sh"
+fi
+
+echo 'Vivaldi Mod Manager project was not found in the home directory.' >&2
+echo 'Run install-portable-launcher.sh from the project directory.' >&2
+exit 1

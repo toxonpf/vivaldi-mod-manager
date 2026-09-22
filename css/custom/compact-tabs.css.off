@@ -1,0 +1,8 @@
+/* Чуть более компактные вкладки на верхней панели. */
+#browser.tabs-top #tabs-container .tab-position {
+  height: 32px !important;
+}
+
+#browser.tabs-top #tabs-container .tab {
+  min-width: 104px !important;
+}
