@@ -4,6 +4,7 @@
 
 A local, cross-platform manager for Vivaldi UI modifications. It keeps CSS and JavaScript mods organized, provides a browser-based control panel, and safely handles the elevated operations required by Vivaldi JavaScript mods.
 
+Локальный кроссплатформенный менеджер изменений пользовательского интерфейса Vivaldi. Он упорядочивает CSS- и JavaScript-моды, предоставляет панель управления на основе браузера и безопасно обрабатывает операции с повышенными правами, требуемые JavaScript-модами Vivaldi.
 ---
 
 ## English
