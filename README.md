@@ -10,6 +10,9 @@ A local, cross-platform manager for Vivaldi UI modifications. It keeps CSS and J
 
 ## English
 
+> [!IMPORTANT]
+> CSS mods work only when Vivaldi's experimental **Allow for using CSS modifications** option is enabled. Open `vivaldi://experiments`, enable the option, select `css/custom` under **Settings → Appearance → Custom UI Modifications**, and completely restart Vivaldi.
+
 ### Features
 
 - Local web interface at `http://127.0.0.1:43777`.
@@ -222,6 +225,9 @@ See [docs/MODDING.md](docs/MODDING.md) for CSS and JavaScript conventions, safe 
 ---
 
 ## Русский
+
+> [!IMPORTANT]
+> CSS-моды работают только после включения экспериментальной настройки Vivaldi **Allow for using CSS modifications**. Откройте `vivaldi://experiments`, включите эту настройку, выберите `css/custom` в разделе **Настройки → Внешний вид → Пользовательские изменения интерфейса** и полностью перезапустите Vivaldi.
 
 ### Возможности
 
