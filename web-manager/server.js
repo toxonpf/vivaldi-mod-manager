@@ -25,6 +25,7 @@ function detectVivaldi() {
     return {
       executable: '/opt/vivaldi/vivaldi',
       windowHtml: '/opt/vivaldi/resources/vivaldi/window.html',
+      version: null,
     };
   }
   const roots = [
@@ -35,17 +36,21 @@ function detectVivaldi() {
   for (const application of roots) {
     if (!fs.existsSync(application)) continue;
     const direct = path.join(application, 'resources', 'vivaldi', 'window.html');
-    if (fs.existsSync(direct)) return { executable: path.join(application, 'vivaldi.exe'), windowHtml: direct };
+    if (fs.existsSync(direct)) {
+      return { executable: path.join(application, 'vivaldi.exe'), windowHtml: direct, version: null };
+    }
     const versions = fs.readdirSync(application, { withFileTypes: true })
       .filter((entry) => entry.isDirectory() && /^\d+(?:\.\d+)+$/.test(entry.name))
       .map((entry) => entry.name)
       .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
     for (const version of versions) {
       const candidate = path.join(application, version, 'resources', 'vivaldi', 'window.html');
-      if (fs.existsSync(candidate)) return { executable: path.join(application, 'vivaldi.exe'), windowHtml: candidate };
+      if (fs.existsSync(candidate)) {
+        return { executable: path.join(application, 'vivaldi.exe'), windowHtml: candidate, version };
+      }
     }
   }
-  return { executable: null, windowHtml: null };
+  return { executable: null, windowHtml: null, version: null };
 }
 
 const vivaldi = detectVivaldi();
@@ -127,12 +132,22 @@ function log(action, result = 'ok') {
 }
 
 function vivaldiVersion() {
+  // On Windows, starting vivaldi.exe with --version is not a side-effect-free
+  // query: it can open a browser window. The manager polls /api/status, so doing
+  // that here used to create an endless open/close loop. The installation's
+  // version directory already contains the version we need.
+  if (process.platform === 'win32') {
+    return vivaldi.version ? `Vivaldi ${vivaldi.version}` : 'Vivaldi: версия не определена';
+  }
   try {
     if (!vivaldi.executable) throw new Error('not found');
     return execFileSync(vivaldi.executable, ['--version'], { encoding: 'utf8', timeout: 3000 }).trim();
   }
   catch { return 'Vivaldi: версия не определена'; }
 }
+
+// Version detection must not launch a process for every status refresh.
+const detectedVivaldiVersion = vivaldiVersion();
 
 function tabColorsStatus() {
   const enabled = Boolean(windowHtml && fs.existsSync(windowHtml) && fs.readFileSync(windowHtml, 'utf8').includes('<!-- user-tab-colors-mod -->'));
@@ -165,7 +180,7 @@ function status() {
       };
     });
   const trash = fs.readdirSync(trashDir).filter((name) => /^\d+--[a-z0-9-]+\.css(?:\.off)?$/.test(name)).sort().reverse();
-  return { version: vivaldiVersion(), css, js: { tabColors: tabColorsStatus() }, trash, activity: readActivity().slice(0, 10) };
+  return { version: detectedVivaldiVersion, css, js: { tabColors: tabColorsStatus() }, trash, activity: readActivity().slice(0, 10) };
 }
 
 function send(response, code, value) {
@@ -314,7 +329,10 @@ http.createServer((request, response) => {
       const script = path.join(tabColors, `${jsMatch[1] === 'install' ? 'install' : 'uninstall'}${suffix}`);
       runElevated(script, (code, output) => {
         log(`${jsMatch[1] === 'install' ? 'Установлен/обновлён' : 'Удалён'} JS: tab-colors`, code === 0 ? 'ok' : 'error');
-        sendResult(response, code === 0 ? 200 : 400, output || 'Действие отменено.');
+        const fallback = code === 0
+          ? `JS-мод ${jsMatch[1] === 'install' ? 'установлен/обновлён' : 'удалён'}. Перезапустите Vivaldi.`
+          : 'Действие не выполнено. Подтвердите запрос прав администратора Windows и повторите.';
+        sendResult(response, code === 0 ? 200 : 400, output || fallback);
       });
     });
   }
@@ -331,7 +349,10 @@ http.createServer((request, response) => {
       runElevated(scripts[jsControlMatch[1]], (code, output) => {
         const labels = { enable: 'Включён', disable: 'Выключен', repair: 'Переустановлен' };
         log(`${labels[jsControlMatch[1]]} JS: tab-colors`, code === 0 ? 'ok' : 'error');
-        sendResult(response, code === 0 ? 200 : 400, output || 'Действие отменено.');
+        const fallback = code === 0
+          ? `JS-мод ${labels[jsControlMatch[1]].toLowerCase()}. Перезапустите Vivaldi.`
+          : 'Действие не выполнено. Подтвердите запрос прав администратора Windows и повторите.';
+        sendResult(response, code === 0 ? 200 : 400, output || fallback);
       });
     });
   }

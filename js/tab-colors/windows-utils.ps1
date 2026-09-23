@@ -10,11 +10,17 @@ function Assert-Administrator {
 }
 
 function Find-VivaldiWindowHtml {
-    $roots = @(
-        (Join-Path $env:LOCALAPPDATA 'Vivaldi\Application'),
-        (if ($env:ProgramFiles) { Join-Path $env:ProgramFiles 'Vivaldi\Application' }),
-        (if (${env:ProgramFiles(x86)}) { Join-Path ${env:ProgramFiles(x86)} 'Vivaldi\Application' })
-    ) | Where-Object { $_ -and (Test-Path $_) }
+    $roots = @()
+    if ($env:LOCALAPPDATA) {
+        $roots += Join-Path $env:LOCALAPPDATA 'Vivaldi\Application'
+    }
+    if ($env:ProgramFiles) {
+        $roots += Join-Path $env:ProgramFiles 'Vivaldi\Application'
+    }
+    if (${env:ProgramFiles(x86)}) {
+        $roots += Join-Path ${env:ProgramFiles(x86)} 'Vivaldi\Application'
+    }
+    $roots = $roots | Where-Object { Test-Path $_ }
 
     foreach ($application in $roots) {
         $direct = Join-Path $application 'resources\vivaldi\window.html'

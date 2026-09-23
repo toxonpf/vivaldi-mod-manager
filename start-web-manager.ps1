@@ -13,12 +13,17 @@ function Test-Manager {
 }
 
 function Find-VivaldiExe {
-    $candidates = @(
-        (Join-Path $env:LOCALAPPDATA 'Vivaldi\Application\vivaldi.exe'),
-        (if ($env:ProgramFiles) { Join-Path $env:ProgramFiles 'Vivaldi\Application\vivaldi.exe' }),
-        (if (${env:ProgramFiles(x86)}) { Join-Path ${env:ProgramFiles(x86)} 'Vivaldi\Application\vivaldi.exe' })
-    ) | Where-Object { $_ -and (Test-Path $_) }
-    return $candidates | Select-Object -First 1
+    $candidates = @()
+    if ($env:LOCALAPPDATA) {
+        $candidates += Join-Path $env:LOCALAPPDATA 'Vivaldi\Application\vivaldi.exe'
+    }
+    if ($env:ProgramFiles) {
+        $candidates += Join-Path $env:ProgramFiles 'Vivaldi\Application\vivaldi.exe'
+    }
+    if (${env:ProgramFiles(x86)}) {
+        $candidates += Join-Path ${env:ProgramFiles(x86)} 'Vivaldi\Application\vivaldi.exe'
+    }
+    return $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 }
 
 function Open-Manager {
